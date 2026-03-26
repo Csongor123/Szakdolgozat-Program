@@ -176,15 +176,19 @@ function runTask(button) {
                 errors.push(
                     'A console.log-ban  csak a "Nagykorú" vagy "Kiskorú" szöveg lehet.'
                 );
+            } else if (result === "missingLogs") {
+    errors.push("A feladat nem teljesül.");    
             } else if (result !== "ok") {
                 errors.push("A feladat nem teljesül.");
             }
         } else if (taskId === "3-2") {
-            const ok = taskValidators.validateTask_3_2(input);
-            if (!ok) {
+            const result = taskValidators.validateTask_3_2(input);
+            if (result === "invalidRange") {
                 errors.push(
                     "A for ciklusban lévő számok csak 0 és 99 közötti számok lehetnek."
                 );
+            } else if (result !== "ok") {
+                errors.push("A feladat nem teljesül.");
             }
         } else if (taskId === "2-1") {
             const ok = taskValidators.validateTask_2_1(input);
@@ -202,39 +206,56 @@ function runTask(button) {
                 errors.push("A feladat nem teljesül.");
             }
         } else if (taskId === "5-1") {
-            const ok = taskValidators.validateTask_5_1(input);
-            if (!ok) {
-                errors.push(
-                    "A tömb csak 0 és 99 közötti egész számokat tartalmazhat, legfeljebb 99 elemmel, és az első számot valamint a hosszát kell kiírni."
-                );
-            }
-        } else if (taskId === "6-1") {
-            const ok = taskValidators.validateTask_6_1(input);
-            if (!ok) {
+    const result = taskValidators.validateTask_5_1(input);
+
+    if (result === "arrayError") {
+        errors.push(
+            "A tömb csak 0 és 99 közötti egész számokat tartalmazhat, legfeljebb 99 elemmel, és az első számot valamint a hosszát kell kiírni."
+        );
+    } else if (
+        result === "missingArrayName" ||
+        result === "missingFirstElement" ||
+        result === "missingLength"
+    ) {
+        errors.push("A feladat nem teljesül.");
+    } else if (result !== "ok") {
+        errors.push("A feladat nem teljesül.");
+    }
+} else if (taskId === "6-1") {
+            const result = taskValidators.validateTask_6_1(input);
+            if (result === "invalidOperation") {
                 errors.push("Itt csak összeadást használhatsz: a + b vagy b + a.");
-            }
+            } else if (result !== "ok") {
+        errors.push("A feladat nem teljesül.");
+    }
         } else if (taskId === "6-2") {
-            const ok = taskValidators.validateTask_6_2(input);
-            if (!ok) {
-                errors.push("Itt csak kivonást használhatsz: a - b vagy b - a.");
-            }
+    const result = taskValidators.validateTask_6_2(input);
+    if (result === "invalidOperation") {
+        errors.push("Itt csak kivonást használhatsz: a - b vagy b - a.");
+    } else if (result !== "ok") {
+        errors.push("A feladat nem teljesül.");
+    }
         } else if (taskId === "6-3") {
-            const ok = taskValidators.validateTask_6_3(input);
-            if (!ok) {
-                errors.push("Itt csak szorzást használhatsz: a * b vagy b * a.");
-            }
+    const result = taskValidators.validateTask_6_3(input);
+    if (result === "invalidOperation") {
+        errors.push("Itt csak szorzást használhatsz: a * b vagy b * a.");
+    } else if (result !== "ok") {
+        errors.push("A feladat nem teljesül.");
+    }
         } else if (taskId === "6-4") {
-            const ok = taskValidators.validateTask_6_4(input);
-            if (!ok) {
-                errors.push("Itt csak osztást használhatsz: a / b vagy b / a.");
-            }
-        } else if (taskId === "7-1") {
-            const ok = taskValidators.validateTask_7_1(input);
-            if (!ok) {
-                errors.push(
-                    "Írd át a cim elem szövegét innerText segítségével."
-                );
-            }
+    const result = taskValidators.validateTask_6_4(input);
+    if (result === "invalidOperation") {
+        errors.push("Itt csak osztást használhatsz: a / b vagy b / a.");
+    } else if (result !== "ok") {
+        errors.push("A feladat nem teljesül.");
+    }
+    } else if (taskId === "7-1") {
+    const ok = taskValidators.validateTask_7_1(input);
+    if (!ok) {
+        errors.push(
+            "Írd át a cim elem szövegét innerText segítségével."
+        );
+    }
         } else if (taskId === "8-1") {
             const ok = taskValidators.validateTask_8_1(input);
             if (!ok) {

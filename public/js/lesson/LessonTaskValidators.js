@@ -51,9 +51,7 @@ class LessonTaskValidators {
             taskId === "6-3" ||
             taskId === "6-4"
         ) {
-            if (input.length > 50) {
-    return "❌ Ebben a feladatban legfeljebb 50 karakter lehet.";
-        }
+            
             const varRegex =
                 /\b(let|const)\s+(a|b)\s*=\s*([^;\n]+)/g;
             let match;
@@ -181,6 +179,10 @@ if (taskId === "5-1") {
         }
 
         const nameValue = nameMatch[2].trim();
+
+        if (nameValue.length > 50) {
+            return "❌ A név legfeljebb 50 karakter lehet.";
+        }
         const validNamePattern =
             /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+(\d+)?$/;
 
@@ -208,6 +210,11 @@ if (taskId === "5-1") {
         }
 
         const loggedText = textMatch[1].trim();
+
+        if (loggedText.length > 50) {
+        return "❌ A feladatban legfeljebb 50 karakter lehet.";
+    }
+
         const validTextPattern =
             /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+(\d{1,2})?[.!?]*$/;
 
@@ -235,6 +242,21 @@ if (taskId === "5-1") {
         }
 
         const nameValue = helloMatch[1].trim();
+        if (nameValue.length > 50) {
+    return "❌ A feladatban legfeljebb 50 karakter lehet.";
+}
+    const greetingMatch = input.match(
+        /console\.log\s*\(\s*(['"])([^'"]*)\1\s*\+\s*([a-zA-Z_$][\w$]*)\s*\+\s*(['"])([^'"]*)\4\s*\)/
+    );
+
+    if (greetingMatch) {
+        const beforeName = greetingMatch[2].trim();
+        const afterName = greetingMatch[5].trim();
+
+        if ((beforeName + afterName).length > 50) {
+            return "❌ A feladatban legfeljebb 50 karakter lehet.";
+        }
+    }
         const validNamePattern =
             /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+(\d+)?$/;
 
@@ -263,6 +285,11 @@ if (taskId === "5-1") {
         }
 
         const titleText = textMatch[1].trim();
+
+        if (titleText.length > 50) {
+        return "❌ A feladatban legfeljebb 50 karakter lehet.";
+    }
+
         const validTitlePattern =
             /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű0-9 ]+[.!?]?$/;
 
@@ -282,6 +309,9 @@ if (taskId === "5-1") {
         }
 
         const alertText = alertMatch[1].trim();
+        if (alertText.length > 50) {
+    return "❌ A feladatban legfeljebb 50 karakter lehet.";
+}
         const validAlertPattern =
             /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű0-9 ]+[.!?]?$/;
 
@@ -347,7 +377,7 @@ if (taskId === "5-1") {
         }
 
         if (foundTexts.length !== 2) {
-            return "invalidText";
+            return "missingLogs";
         }
 
         const allowed = ["Nagykorú", "Kiskorú"];
@@ -367,7 +397,7 @@ if (taskId === "5-1") {
         );
 
         if (!match) {
-            return false;
+            return "invalidLoop";
         }
 
         const start = parseInt(match[1], 10);
@@ -379,10 +409,15 @@ if (taskId === "5-1") {
             start < 0 || start > 99 ||
             limit < 0 || limit > 99
         ) {
-            return false;
-        }
+        return "invalidRange";
+    }
 
-        return true;
+    const logOk = /console\.log\s*\(\s*i\s*\)/.test(input);
+    if (!logOk) {
+        return "missingLog";
+    }
+
+    return "ok";
     }
 
     validateTask_4_1(input) {
@@ -400,10 +435,6 @@ if (taskId === "5-1") {
 
         const koszontCalls = (input.match(/\bkoszont\s*\(/g) || []).length;
         const callOk = koszontCalls >= 2;
-
-        if (text.length > 50) {
-            return false;
-        }
 
         return functionOk && logOk && callOk;
     }
@@ -437,14 +468,6 @@ if (taskId === "5-1") {
         return false;
     }
 
-        const helloCallMatch = input.match(/\bhello\s*\(\s*(['"])([^'"]+)\1\s*\)/);
-    if (helloCallMatch) {
-        const passedName = helloCallMatch[2].trim();
-        if (passedName.length > 50) {
-            return false;
-        }
-    }
-
         const greetingMatch = input.match(
             /console\.log\s*\(\s*(['"])([^'"]*)\1\s*\+\s*([a-zA-Z_$][\w$]*)\s*\+\s*(['"])([^'"]*)\4\s*\)/
         );
@@ -457,9 +480,6 @@ if (taskId === "5-1") {
         const usedParam = greetingMatch[3];
         const afterName = greetingMatch[5].trim();
 
-        if ((beforeName + afterName).length > 50) {
-        return false;
-    }
 
         if (usedParam !== paramName) {
             return false;
@@ -477,29 +497,35 @@ if (taskId === "5-1") {
     }
 
     validateTask_5_1(input) {
+    const anyArrayMatch =
+        input.match(/\b(let|const)\s+[a-zA-Z_$][\w$]*\s*=\s*\[([^\]]*)\]/);
+
     const arrayMatch =
         input.match(/\b(let|const)\s+szamok\s*=\s*\[([^\]]*)\]/);
 
     if (!arrayMatch) {
-        return false;
+        if (anyArrayMatch) {
+            return "missingArrayName";
+        }
+        return "arrayError";
     }
 
     const arrayContent = arrayMatch[2].trim();
 
     if (!arrayContent) {
-        return false;
+        return "arrayError";
     }
 
     if (!/\d/.test(arrayContent)) {
-        return false;
+        return "arrayError";
     }
 
     if (/^\s*,+\s*$/.test(arrayContent)) {
-        return false;
+        return "arrayError";
     }
 
     if (/,\s*,/.test(arrayContent) || /,\s*$/.test(arrayContent)) {
-        return false;
+        return "arrayError";
     }
 
     const items = arrayContent
@@ -508,22 +534,22 @@ if (taskId === "5-1") {
         .filter(item => item !== "");
 
         if (items.length > 100) {
-    return false;
+    return "arrayError";
 }
 
     if (items.length < 1) {
-        return false;
+        return "arrayError";
     }
 
     for (const item of items) {
         if (!/^\d+$/.test(item)) {
-            return false;
+            return "arrayError";
         }
 
         const n = parseInt(item, 10);
 
         if (n < 0 || n > 99) {
-            return false;
+            return "arrayError";
         }
     }
 
@@ -535,7 +561,15 @@ if (taskId === "5-1") {
             .test(input) ||
         /console\.log\s*\(\s*szamok\.length\s*\)/.test(input);
 
-    return firstElementOk && lengthOk;
+    if (!firstElementOk) {
+    return "missingFirstElement";
+}
+
+if (!lengthOk) {
+    return "missingLength";
+}
+
+return "ok";
 }
 
     validateTask_6_1(input) {
@@ -548,6 +582,15 @@ if (taskId === "5-1") {
             `\\b(let|const)\\s+b\\s*=\\s*${numberPattern}\\s*;?`
         ).test(input);
 
+        if (!aOk || !bOk) {
+        return "invalidVariables";
+    }
+
+    const logCallOk = /console\.log\s*\(/.test(input);
+    if (!logCallOk) {
+        return "invalidOutput";
+    }
+
         const logOk =
             /console\.log\s*\(\s*(a\s*\+\s*b|b\s*\+\s*a)\s*\)/.test(input);
 
@@ -555,7 +598,15 @@ if (taskId === "5-1") {
         const multBad = /(a\s*\*\s*b|b\s*\*\s*a)/.test(input);
         const divBad = /(a\s*\/\s*b|b\s*\/\s*a)/.test(input);
 
-        return aOk && bOk && logOk && !minusBad && !multBad && !divBad;
+        if (minusBad || multBad || divBad) {
+        return "invalidOperation";
+    }
+
+    if (!logOk) {
+        return "invalidOutput";
+    }
+
+    return "ok";
     }
 
     validateTask_6_2(input) {
@@ -566,13 +617,32 @@ if (taskId === "5-1") {
         const bOk = new RegExp(
             `\\b(let|const)\\s+b\\s*=\\s*${numberPattern}\\s*;?`
         ).test(input);
+
+         if (!aOk || !bOk) {
+        return "invalidVariables";
+    }
+
+    const logCallOk = /console\.log\s*\(/.test(input);
+    if (!logCallOk) {
+        return "invalidOutput";
+    }
+
         const logOk =
             /console\.log\s*\(\s*(a\s*-\s*b|b\s*-\s*a)\s*\)\s*;?/m.test(input);
+        
         const plusBad = /(a\s*\+\s*b|b\s*\+\s*a)/.test(input);
         const multBad = /(a\s*\*\s*b|b\s*\*\s*a)/.test(input);
         const divBad = /(a\s*\/\s*b|b\s*\/\s*a)/.test(input);
 
-        return aOk && bOk && logOk && !plusBad && !multBad && !divBad;
+       if (plusBad || multBad || divBad) {
+        return "invalidOperation";
+    }
+
+    if (!logOk) {
+        return "invalidOutput";
+    }
+
+    return "ok";
     }
 
     validateTask_6_3(input) {
@@ -583,13 +653,29 @@ if (taskId === "5-1") {
         const bOk = new RegExp(
             `\\b(let|const)\\s+b\\s*=\\s*${numberPattern}\\s*;?`
         ).test(input);
+         if (!aOk || !bOk) {
+        return "invalidVariables";
+    }
+
+    const logCallOk = /console\.log\s*\(/.test(input);
+    if (!logCallOk) {
+        return "invalidOutput";
+    }
         const logOk =
             /console\.log\s*\(\s*(a\s*\*\s*b|b\s*\*\s*a)\s*\)\s*;?/m.test(input);
         const plusBad = /(a\s*\+\s*b|b\s*\+\s*a)/.test(input);
         const minusBad = /(a\s*-\s*b|b\s*-\s*a)/.test(input);
         const divBad = /(a\s*\/\s*b|b\s*\/\s*a)/.test(input);
 
-        return aOk && bOk && logOk && !plusBad && !minusBad && !divBad;
+         if (plusBad || minusBad || divBad) {
+        return "invalidOperation";
+    }
+
+    if (!logOk) {
+        return "invalidOutput";
+    }
+
+    return "ok";
     }
 
     validateTask_6_4(input) {
@@ -600,13 +686,29 @@ if (taskId === "5-1") {
         const bOk = new RegExp(
             `\\b(let|const)\\s+b\\s*=\\s*${numberPattern}\\s*;?`
         ).test(input);
+        if (!aOk || !bOk) {
+        return "invalidVariables";
+    }
+
+    const logCallOk = /console\.log\s*\(/.test(input);
+    if (!logCallOk) {
+        return "invalidOutput";
+    }
         const logOk =
             /console\.log\s*\(\s*(a\s*\/\s*b|b\s*\/\s*a)\s*\)\s*;?/m.test(input);
         const plusBad = /(a\s*\+\s*b|b\s*\+\s*a)/.test(input);
         const minusBad = /(a\s*-\s*b|b\s*-\s*a)/.test(input);
         const multBad = /(a\s*\*\s*b|b\s*\*\s*a)/.test(input);
 
-        return aOk && bOk && logOk && !plusBad && !minusBad && !multBad;
+         if (plusBad || minusBad || multBad) {
+        return "invalidOperation";
+    }
+
+    if (!logOk) {
+        return "invalidOutput";
+    }
+
+    return "ok";
     }
 
     validateTask_7_1(input) {
@@ -619,9 +721,7 @@ if (taskId === "5-1") {
         }
 
         const text = textMatch[2];
-        if (text.length > 50) {
-            return false;
-        }
+        
         if (!/[a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ]/.test(text)) {
             return false;
         }
@@ -644,9 +744,6 @@ if (taskId === "5-1") {
         }
 
         const text = alertMatch[2];
-        if (text.length > 50) {
-            return false;
-        }
         if (!/[a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ]/.test(text)) {
             return false;
         }
